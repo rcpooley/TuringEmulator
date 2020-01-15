@@ -63,9 +63,9 @@ for (let i = 0; i < 10000; i++) {
     let b = n * 2;
     let c = n;
     while (c === a && b === a * 2) {
-        a += Math.max(r(-n, n), 0);
-        b += Math.max(r(-n, n), 0);
-        c += Math.max(r(-n, n), 0);
+        a = Math.max(a + r(-n, n), 0);
+        b = Math.max(b + r(-n, n), 0);
+        c = Math.max(c + r(-n, n), 0);
     }
     let input = "a".repeat(a) + "b".repeat(b) + "c".repeat(c);
     if (emulator.run(input) !== "REJECT") {
@@ -74,8 +74,12 @@ for (let i = 0; i < 10000; i++) {
 
     input = rs("abc", r(0, 20));
     input = "b";
-    if (isValid(input) !== (emulator.run(input) === "ACCEPT")) {
-        console.error(`Bad response for input "${input}"`);
+    const valid = isValid(input);
+    const accepted = emulator.run(input) === "ACCEPT";
+    if (valid && !accepted) {
+        console.error(`Failed to accept input "${input}"`);
+    } else if (!valid && accepted) {
+        console.error(`Failed to reject input "${input}"`);
     }
 }
 
