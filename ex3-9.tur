@@ -1,0 +1,35 @@
+init q1
+accept qaccept
+
+state q1
+1 to q3,x,r
+# to q8,r
+0 to q2,x,r
+
+state q3
+0,1 to q3,r
+# to q5,r
+
+state q5
+x to q5,r
+1 to q6,x,l
+
+state q6
+0,1,x to q6,l
+# to q7,l
+
+state q7
+0,1 to q7,l
+x to q1,r
+
+state q8
+x to q8,r
+_ to qaccept,r
+
+state q2
+0,1 to q2,r
+# to q4,r
+
+state q4
+x to q4,r
+0 to q6,x,l
