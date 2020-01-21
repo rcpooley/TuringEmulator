@@ -140,7 +140,14 @@ class Emulator {
 
         let log = "";
 
-        while (state !== this.accept) {
+        const addLog = () => {
+            if (log.length > 0) log += ", ";
+            log += sanitize(tape.substring(0, pos));
+            log += `$${state[0] + "_" + state.substring(1)}$`;
+            log += sanitize(tape.substring(pos));
+        };
+
+        const fixPos = () => {
             while (pos < 0) {
                 tape = "_" + tape;
                 pos++;
@@ -149,17 +156,19 @@ class Emulator {
             while (pos >= tape.length) {
                 tape += "_";
             }
+        };
 
-            if (stateLog) {
-                if (log.length > 0) log += ", ";
-                log += sanitize(tape.substring(0, pos));
-                log += `$${state[0] + "_" + state.substring(1)}$`;
-                log += sanitize(tape.substring(pos));
-            }
+        while (state !== this.accept) {
+            fixPos();
+            addLog();
 
             const c = tape[pos];
             const action = this.states[state][c];
             if (!action) {
+                state = "q{reject}";
+                pos++;
+                fixPos();
+                addLog();
                 if (stateLog) {
                     return log;
                 }
@@ -175,6 +184,8 @@ class Emulator {
                 pos++;
             }
         }
+
+        addLog();
 
         if (stateLog) {
             return log;
