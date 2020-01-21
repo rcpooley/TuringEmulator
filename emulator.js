@@ -182,6 +182,17 @@ class Emulator {
 
         return "ACCEPT";
     }
+
+    export() {
+        let out = `name: Export\ninit: ${this.init}\naccept: ${this.accept}\n`;
+        Object.keys(this.states).forEach(state => {
+            Object.keys(this.states[state]).forEach(c => {
+                const { nextState, write, dir } = this.states[state][c];
+                out += `${state}, ${c}\n${nextState}, ${write}, ${dir}\n`;
+            });
+        });
+        return out;
+    }
 }
 
 module.exports = Emulator;
