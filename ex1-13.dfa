@@ -1,4 +1,5 @@
 init q0
+accept q0
 
 state q0
 0, r to q0

@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 function parseDfa(lines) {
-    let init, curState;
+    let init, curState, accept;
     const states = {};
 
     const getState = n => {
@@ -17,6 +17,11 @@ function parseDfa(lines) {
         if (line.startsWith("init")) {
             init = arg;
             return;
+        } else if (line.startsWith("accept")) {
+            accept = arg
+                .trim()
+                .split(",")
+                .map(a => a.trim());
         } else if (line.startsWith("state")) {
             curState = arg;
             return;
@@ -43,6 +48,7 @@ function parseDfa(lines) {
 
     return {
         init,
+        accept,
         states
     };
 }
@@ -56,12 +62,13 @@ class Dfa {
             .map(l => l.trim())
             .filter(l => l.length > 0 && !l.startsWith("//"));
 
-        const { init, states } = parseDfa(lines);
-        return new Dfa(init, states);
+        const { init, accept, states } = parseDfa(lines);
+        return new Dfa(init, accept, states);
     }
 
-    constructor(init, states) {
+    constructor(init, accept, states) {
         this.init = init;
+        this.accept = accept;
         this.states = states;
     }
 
@@ -70,21 +77,30 @@ class Dfa {
         let state = this.init;
         let log = "";
 
-        const addLog = s => {
-            if (log.length > 0) log += ", ";
+        const addLog = (s, c) => {
+            if (log.length > 0) log += " -> ";
             log += s;
+            if (c) {
+                log += `[${c}]`;
+            }
         };
-        addLog(state);
 
         while (tape.length > 0) {
             const c = tape.splice(0, 1)[0];
+            addLog(state, c);
             const nextState = this.states[state][c];
             if (!nextState) {
-                console.error(`No state transition defined for ${state}[${c}]`);
-                process.exit();
+                log += `\nREJECT (no state transition defined for ${state}[${c}])`;
+                return log;
             }
             state = nextState;
-            addLog(state);
+        }
+        addLog(state);
+
+        if (this.accept.includes(state)) {
+            log += "\nACCEPT";
+        } else {
+            log += "\nREJECT";
         }
 
         return log;
