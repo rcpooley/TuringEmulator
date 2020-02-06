@@ -18,7 +18,10 @@ function parseDfa(lines) {
             init = arg;
             return;
         } else if (line.startsWith("accept")) {
-            accept = arg
+            accept = line
+                .split(" ")
+                .slice(1)
+                .join("")
                 .trim()
                 .split(",")
                 .map(a => a.trim());
