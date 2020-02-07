@@ -25,6 +25,7 @@ function parseDfa(lines) {
                 .trim()
                 .split(",")
                 .map(a => a.trim());
+            return;
         } else if (line.startsWith("state")) {
             curState = arg;
             return;
@@ -75,7 +76,7 @@ class Dfa {
         this.states = states;
     }
 
-    run(input) {
+    run(input, stateLog = true) {
         let tape = input.split("");
         let state = this.init;
         let log = "";
@@ -94,19 +95,27 @@ class Dfa {
             const nextState = this.states[state][c];
             if (!nextState) {
                 log += `\nREJECT (no state transition defined for ${state}[${c}])`;
+                if (!stateLog) {
+                    return "REJECT";
+                }
                 return log;
             }
             state = nextState;
         }
         addLog(state);
 
+        let result = "REJECT";
+
         if (this.accept.includes(state)) {
-            log += "\nACCEPT";
-        } else {
-            log += "\nREJECT";
+            result = "ACCEPT";
         }
 
-        return log;
+        if (stateLog) {
+            log += "\n" + result;
+            return log;
+        }
+
+        return result;
     }
 }
 
