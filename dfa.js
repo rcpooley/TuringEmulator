@@ -46,7 +46,16 @@ function parseDfa(lines) {
         const nextState = spl[1].trim();
 
         read.forEach(c => {
-            state[c] = nextState;
+            const spl2 = c.split("-");
+            if (spl2.length === 2) {
+                const a = parseInt(spl2[0]);
+                const b = parseInt(spl2[1]);
+                for (let i = a; i <= b; i++) {
+                    state[i] = nextState;
+                }
+            } else {
+                state[c] = nextState;
+            }
         });
     });
 
