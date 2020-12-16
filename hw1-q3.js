@@ -50,10 +50,19 @@ function isValid(str) {
 const emulator = Emulator.createFromFile(process.argv[2]);
 
 for (let i = 0; i < 10; i++) {
-    const input = "a".repeat(i) + "b".repeat(i * 2) + "c".repeat(i);
-    const result = emulator.run(input);
+    let input = "a".repeat(i) + "b".repeat(i * 2) + "c".repeat(i);
+    let result = emulator.run(input);
     if (result !== "ACCEPT") {
         console.error(`Failed to accept input "${input}"`);
+    }
+
+    input = input + input;
+
+    if (input.length === 0) continue;
+
+    result = emulator.run(input);
+    if (result !== "REJECT") {
+        console.error(`Failed to reject input "${input}"`);
     }
 }
 
