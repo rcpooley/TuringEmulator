@@ -1,0 +1,17 @@
+init q0
+accept q0
+
+state q0
+0, r to q0
+1 to q1
+2 to q2
+
+state q1
+0 to q1
+1 to q2
+2, r to q0
+
+state q2
+0 to q2
+1, r to q0
+2 to q1
